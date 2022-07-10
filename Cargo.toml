@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 crossterm = "0.24.0"
+num-traits = "0.2.15"
 rand = "0.8.5"

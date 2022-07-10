@@ -1,59 +1,48 @@
-use rand::seq::IteratorRandom;
-use crossterm::style::Color;
+use std::collections::HashMap;
+use crate::Structure;
+use crate::utils::point::Point;
+use rand::Rng;
+use crate::world::tile::Tile;
+
+pub mod structure;
+mod tile;
+
 
 pub struct World {
-    map: Vec<Tile>,
-    width: usize,
-    height: usize
+    structures: HashMap<Point, Structure>,
+    empty: Tile
 }
 
 impl World {
-    pub fn new(width: usize, height: usize) -> World {
-        let mut map: Vec<Tile> = Vec::new();
-        for _ in 0..(width * height) {
-            map.push(Tile::new());
-        }
-        World {
-            map,
-            width,
-            height
-        }
-    }
-    pub fn get_tile(&self, x: usize, y: usize) -> Option<&Tile> {
-        if x>=self.width || y>=self.height{
-            None
-        } else {
-            self.map.get(x + y *self.width)
-        }
-    }
-}
-
-pub struct Tile {
-    visrep: char,
-    pub foreground: Color,
-    pub background: Color,
-}
-
-impl Tile {
-    pub fn new() -> Tile {
+    pub fn new() -> World {
         let mut rng = rand::thread_rng();
-        let reps = "#. ∙";
-        let backgrounds = [
-            Color::Black, Color::DarkGrey,
-            Color::DarkRed,Color::DarkGreen,Color::DarkBlue,
-            Color::DarkCyan,Color::DarkMagenta,Color::DarkYellow
-        ];
-        let foregrounds = [
-            Color::White, Color::Grey,
-            Color::Red,Color::Green,Color::Blue,
-            Color::Cyan,Color::Magenta,Color::Yellow
-        ];
+        let mut structures = HashMap::new();
 
-        Tile {
-            visrep: reps.chars().choose(&mut rng).unwrap(),
-            foreground: *foregrounds.iter().choose(&mut rng).unwrap(),
-            background: *backgrounds.iter().choose(&mut rng).unwrap(),
+        for _ in 0..10 {
+            structures.insert(
+                Point::new(rng.gen_range(0..80),rng.gen_range(0..50)),
+                Structure::new(10,5)
+            );
+        }
+
+        World {
+            structures,
+            empty: Tile::empty()
         }
     }
-    pub fn as_char(&self) -> char { self.visrep }
+    pub fn get_tile(&self, x: usize, y:usize) -> &Tile {
+        for (point, structure) in self.structures.iter() {
+            if
+                x >= point.x as usize &&
+                x < (point.x as usize + structure.width) &&
+                y >= point.y as usize &&
+                y < (point.y as usize + structure.height) {
+                match structure.get_tile(x-point.x as usize, y-point.y as usize) {
+                    None => continue,
+                    Some(tile) => return tile
+                }
+            }
+        }
+        &self.empty
+    }
 }
