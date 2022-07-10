@@ -11,7 +11,7 @@ impl Structure {
     pub fn new(width: usize, height: usize) -> Structure {
         let mut map: Vec<Tile> = Vec::new();
         for _ in 0..(width * height) {
-            map.push(Tile::new());
+            map.push(Tile::wall());
         }
         Structure {
             map,

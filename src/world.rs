@@ -10,7 +10,7 @@ mod tile;
 
 pub struct World {
     structures: HashMap<Point, Structure>,
-    empty: Tile
+    pregenerated: HashMap<(usize, usize), Tile>,
 }
 
 impl World {
@@ -20,29 +20,39 @@ impl World {
 
         for _ in 0..10 {
             structures.insert(
-                Point::new(rng.gen_range(0..80),rng.gen_range(0..50)),
+                Point::new(rng.gen_range(0..80),rng.gen_range(0..40)),
                 Structure::new(10,5)
             );
         }
 
         World {
             structures,
-            empty: Tile::empty()
+            pregenerated: HashMap::new()
         }
     }
-    pub fn get_tile(&self, x: usize, y:usize) -> &Tile {
+    pub fn get_tile(&mut self, x: usize, y:usize) -> Tile {
+        match self.pregenerated.get(&(x, y)){
+            None => {
+                let tile = self.get_actual(x, y);
+                self.pregenerated.insert((x, y), tile);
+                return tile;
+            }
+            Some(tile) => *tile
+        }
+    }
+    pub fn get_actual(&self, x: usize, y: usize) -> Tile {
         for (point, structure) in self.structures.iter() {
             if
-                x >= point.x as usize &&
+            x >= point.x as usize &&
                 x < (point.x as usize + structure.width) &&
                 y >= point.y as usize &&
                 y < (point.y as usize + structure.height) {
                 match structure.get_tile(x-point.x as usize, y-point.y as usize) {
                     None => continue,
-                    Some(tile) => return tile
+                    Some(tile) => return *tile
                 }
             }
         }
-        &self.empty
+        return Tile::empty();
     }
 }
