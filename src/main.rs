@@ -1,17 +1,30 @@
 use crate::world::World;
+use std::io::{stdout};
+use crossterm::{execute};
+use crossterm::style::{Print, SetForegroundColor, SetBackgroundColor, ResetColor};
 
 mod world;
 
 fn main() {
-    let w = World::new(80, 20);
-    for y in 0..20 {
-        let mut s = String::new();
-        for x in 0..80 {
-            s.push(match w.get_tile(x, y) {
-                None => '?',
-                Some(tile) => tile.as_char(),
-            });
+    let width = 80;
+    let height = 20;
+    let w = World::new(width, height);
+    for y in 0..height {
+        for x in 0..width {
+            match w.get_tile(x, y) {
+                None => execute!(
+                    stdout(),
+                    Print("?".to_string())
+                ),
+                Some(tile) => execute!(
+                    stdout(),
+                    SetForegroundColor(tile.foreground),
+                    SetBackgroundColor(tile.background),
+                    Print(tile.as_char().to_string()),
+                    ResetColor
+                ),
+            }.expect("Could not print tile");
         }
-        println!("{s}");
+        execute!(stdout(), Print("\n".to_string())).expect("Could not add a newline");
     }
 }
