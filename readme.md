@@ -17,3 +17,8 @@ Most of the design ideas align with the [Burden Design Guide](https://spaceships
 
 - Focus on exploration
 - Deemphasize/discourage combat
+
+## Building and running the game
+
+- Install [Rust](https://www.rust-lang.org/)
+- Run `cargo run` in the root folder of this repository
