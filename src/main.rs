@@ -31,3 +31,12 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+
+// Shopping list:
+// todo: entities
+// todo: inventories?
+// todo: world slices
+// todo: generic renderer
+// todo: vision
+// todo: player interaction
+

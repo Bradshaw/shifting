@@ -49,9 +49,11 @@ impl Tile {
                 stdout.queue(SetAttribute(Reset))?;
                 Ok(stdout)
             }
+            //todo: find a better way to do animated tiles
             Tile::Water => {
                 Tile::draw_drawable_tile(TileStyle::water(), stdout)
             }
+            //todo: bugs aren't tiles, silly
             Tile::Bug => {
                 Tile::draw_drawable_tile(TileStyle::bug(), stdout)
             }

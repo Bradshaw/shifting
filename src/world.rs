@@ -10,6 +10,8 @@ mod tile;
 
 pub struct World {
     structures: HashMap<Point, Structure>,
+    //todo: are hashmaps keyed with (usize, usize) efficient
+    //todo: use Point instead of (usize, usize)
     pregenerated: HashMap<(usize, usize), Tile>,
 }
 
@@ -41,6 +43,7 @@ impl World {
         }
     }
     pub fn get_actual(&self, x: usize, y: usize) -> Tile {
+        //todo: use quadtrees or something to avoid iterating over all structures
         for (point, structure) in self.structures.iter() {
             if
             x >= point.x as usize &&

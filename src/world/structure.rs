@@ -1,3 +1,5 @@
+//todo: generate nice-looking structures
+
 use crate::world::tile::Tile;
 
 /// Represents some kind of limited-size structure, like a building or a village
