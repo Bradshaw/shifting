@@ -12,8 +12,10 @@ pub struct Structure {
 impl Structure {
     pub fn new(width: usize, height: usize) -> Structure {
         let mut map: Vec<Tile> = Vec::new();
-        for _ in 0..(width * height) {
-            map.push(Tile::wall());
+        for _ in 0..width {
+            for _ in 0..height {
+                map.push(Tile::Wall);
+            }
         }
         Structure {
             map,
@@ -22,10 +24,11 @@ impl Structure {
         }
     }
     pub fn get_tile(&self, x: usize, y: usize) -> Option<&Tile> {
-        if x>=self.width || y>=self.height{
+        let index = x + y * self.width;
+        if x>=self.width || y>=self.height || index>=self.map.len() {
             None
         } else {
-            self.map.get(x + y *self.width)
+            self.map.get(index)
         }
     }
 }

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use crate::Structure;
 use crate::utils::point::Point;
 use rand::Rng;
+use crate::world::structure::Structure;
 use crate::world::tile::Tile;
 
 pub mod structure;
@@ -52,7 +52,13 @@ impl World {
                 y < (point.y as usize + structure.height) {
                 match structure.get_tile(x-point.x as usize, y-point.y as usize) {
                     None => continue,
-                    Some(tile) => return *tile
+                    Some(tile) => {
+                        match tile {
+                            Tile::Transparent => continue,
+                            Tile::Unknown => continue,
+                            _ => return *tile,
+                        }
+                    }
                 }
             }
         }
