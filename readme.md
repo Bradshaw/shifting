@@ -21,7 +21,7 @@ Most of the design ideas align with the [Burden Design Guide](https://spaceships
 ## Building and running the game
 
 - Install [Rust](https://www.rust-lang.org/)
-- Run `cargo run` in the root folder of this repository
+- Run `cargo xtask run` in the root folder of this repository
 
 ```
                          ,        ᴗ       ⁖

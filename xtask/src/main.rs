@@ -16,8 +16,17 @@ fn main() {
 
 fn try_main() -> Result<(), DynError> {
     let task = env::args().nth(1);
+    let channel_arg = env::args().nth(2);
+    let mut channel: &str = "debug";
+    match channel_arg.as_ref().map(|it| it.as_str()) {
+        Some("debug") => channel = "debug",
+        None => channel = "debug",
+        Some("release") => channel = "release",
+        _ => print_help(),
+    }
     match task.as_ref().map(|it| it.as_str()) {
-        Some("dist") => dist()?,
+        Some("dist") => dist(channel)?,
+        Some("run") => run(channel)?,
         _ => print_help(),
     }
     Ok(())
@@ -32,15 +41,21 @@ dist            builds application and man pages
     )
 }
 
-fn dist() -> Result<(), DynError> {
-    let channel_arg = env::args().nth(2);
-    let mut channel: &str = "debug";
-    match channel_arg.as_ref().map(|it| it.as_str()) {
-        Some("debug") => channel = "debug",
-        None => channel = "debug",
-        Some("release") => channel = "release",
-        _ => print_help(),
+fn run(channel: &str) -> Result<(), DynError> {
+    dist(channel)?;
+
+    let mut status = Command::new(format!("./dist/{channel}/shifting"))
+        .status()?;
+    
+    if !status.success() {
+        Err("launching game failed")?;
     }
+    
+    
+    Ok(())
+}
+
+fn dist(channel: &str) -> Result<(), DynError> {
     
     
     let _ = fs::remove_dir_all(&dist_dir(channel));
