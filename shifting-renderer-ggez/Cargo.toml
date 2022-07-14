@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 shifting-core = { path="../shifting-core"}
 ggez = "0.7.0"
+mint = "0.5.9"
+image = "0.23.14"

@@ -3,8 +3,11 @@ extern crate shifting_renderer_ggez;
 use shifting_renderer_ggez::Renderer;
 
 fn main() {
-    let mut renderer = Renderer::new();
-    Renderer::run(renderer);
+    let renderer = Renderer::new();
+    match Renderer::run(renderer) {
+        Ok(_) => println!("Thank you for playing"),
+        Err(e) => println!("Something donked up: {e}"),
+    };
 }
 
 // Shopping list:
