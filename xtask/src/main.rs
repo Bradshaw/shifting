@@ -1,9 +1,9 @@
+use fs_extra::dir::CopyOptions;
 use std::{
     env, fs,
     path::{Path, PathBuf},
     process::{Command, Stdio},
 };
-use fs_extra::dir::CopyOptions;
 
 type DynError = Box<dyn std::error::Error>;
 
@@ -25,6 +25,7 @@ fn try_main() -> Result<(), DynError> {
         _ => print_help(),
     }
     match task.as_ref().map(|it| it.as_str()) {
+        Some("build") => build(channel)?,
         Some("dist") => dist(channel)?,
         Some("run") => run(channel)?,
         _ => print_help(),
@@ -41,60 +42,68 @@ dist            builds application and man pages
     )
 }
 
-fn run(channel: &str) -> Result<(), DynError> {
-    dist(channel)?;
-
-    let mut status = Command::new(format!("./dist/{channel}/shifting"))
-        .status()?;
-    
-    if !status.success() {
-        Err("launching game failed")?;
-    }
-    
-    
+fn build(channel: &str) -> Result<(), DynError> {
+    build_binary(channel)?;
     Ok(())
 }
 
 fn dist(channel: &str) -> Result<(), DynError> {
-    
-    
-    let _ = fs::remove_dir_all(&dist_dir(channel));
-    fs::create_dir_all(&dist_dir(channel))?;
-
-    dist_binary(channel)?;
-
+    dist_files(channel)?;
     Ok(())
 }
 
-fn dist_binary(channel: &str) -> Result<(), DynError> {
+fn run(channel: &str) -> Result<(), DynError> {
+    build(channel)?;
+    dist(channel)?;
+
+    let status = Command::new(format!("./dist/{channel}/shifting")).status()?;
+
+    if !status.success() {
+        Err("launching game failed")?;
+    }
+    Ok(())
+}
+
+fn build_binary(channel: &str) -> Result<(), DynError> {
     let cargo = env::var("CARGO").unwrap_or_else(|_| "cargo".to_string());
     let mut command = Command::new(cargo);
-    
+
     command.current_dir(project_root());
-    
+
     if channel == "release" {
         command.args(&["build", "--release"]);
     } else {
         command.args(&["build"]);
     }
-    
+
     let status = command.status()?;
 
     if !status.success() {
         Err("cargo build failed")?;
     }
 
+    Ok(())
+}
+
+fn dist_files(channel: &str) -> Result<(), DynError> {
+    let _ = fs::remove_dir_all(&dist_dir(channel));
+    fs::create_dir_all(&dist_dir(channel))?;
+
     let dst = project_root().join(format!("target/{channel}/shifting").as_str());
 
     fs::copy(&dst, dist_dir(channel).join("shifting"))?;
-    fs_extra::dir::copy(project_root().join("resources"), dist_dir(channel).join("resources"), &CopyOptions {
-        overwrite: true,
-        skip_exist: true,
-        buffer_size: 64000,
-        copy_inside: true,
-        content_only: false,
-        depth: 0
-    })?;
+    fs_extra::dir::copy(
+        project_root().join("resources"),
+        dist_dir(channel).join("resources"),
+        &CopyOptions {
+            overwrite: true,
+            skip_exist: true,
+            buffer_size: 64000,
+            copy_inside: true,
+            content_only: false,
+            depth: 0,
+        },
+    )?;
 
     if Command::new("strip")
         .arg("--version")

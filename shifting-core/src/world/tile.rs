@@ -1,6 +1,3 @@
-use std::io::Stdout;
-use std::ops::BitAnd;
-use rand::seq::IteratorRandom;
 use rand::Rng;
 
 #[derive(Copy, Clone)]

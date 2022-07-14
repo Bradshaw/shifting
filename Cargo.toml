@@ -1,5 +1,16 @@
+[package]
+name = "shifting"
+version = "0.0.1"
+
+[[bin]]
+name = "shifting"
+
 [workspace]
 members = [
-    "shifting",
+    "shifting-core",
+    "shifting-renderer-ggez",
     "xtask",
 ]
+
+[dependencies]
+shifting-renderer-ggez = { path = "./shifting-renderer-ggez" }

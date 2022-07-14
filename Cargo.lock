@@ -2144,10 +2144,24 @@ dependencies = [
 
 [[package]]
 name = "shifting"
+version = "0.0.1"
+dependencies = [
+ "shifting-renderer-ggez",
+]
+
+[[package]]
+name = "shifting-core"
+version = "0.1.0"
+dependencies = [
+ "rand",
+]
+
+[[package]]
+name = "shifting-renderer-ggez"
 version = "0.1.0"
 dependencies = [
  "ggez",
- "rand",
+ "shifting-core",
 ]
 
 [[package]]
